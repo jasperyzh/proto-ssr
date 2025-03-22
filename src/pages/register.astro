@@ -20,6 +20,27 @@ const error = Astro.url.searchParams.get('error');
       An account with this email already exists. Please login instead.
     </div>
   )}
+  {error === 'invalid_email' && (
+    <div class="alert alert-danger mb-4">
+      The email address you entered is invalid. Please enter a valid email.
+    </div>
+  )}
+  {error === 'missing_fields' && (
+    <div class="alert alert-danger mb-4">
+      All fields are required. Please fill in all the information.
+    </div>
+  )}
+  {error === 'password_too_short' && (
+    <div class="alert alert-danger mb-4">
+      Password must be at least 8 characters long.
+    </div>
+  )}
+  {error === 'server_error' && (
+    <div class="alert alert-danger mb-4">
+      An error occurred during registration. Please try again later.
+      {Astro.url.searchParams.get('message') && <div class="mt-2 small">Error details: {Astro.url.searchParams.get('message')}</div>}
+    </div>
+  )}
   
   <form action="/api/register" method="post">
     <div class="form-floating mb-3">

@@ -1,5 +1,6 @@
-import { findUserByEmail, validatePassword } from '../../lib/db';
-import { createSession, createSessionCookie } from '../../lib/auth';
+import { findUserByEmail, validatePassword } from '../../lib/supabaseDB';
+import { createSession, createSessionCookie } from '../../lib/supabaseAuth';
+import { supabase } from '../../lib/supabaseClient';
 
 export async function POST({ request, redirect, cookies }) {
   // Parse form data
@@ -13,11 +14,21 @@ export async function POST({ request, redirect, cookies }) {
   }
   
   try {
-    // Find user by email
+    // Sign in with Supabase auth
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    
+    if (error) {
+      return redirect('/login?error=invalid');
+    }
+    
+    // Find user profile
     const user = await findUserByEmail(email);
     
-    // If user doesn't exist or password is invalid
-    if (!user || !(await validatePassword(user, password))) {
+    // Check if user exists and is verified
+    if (!user) {
       return redirect('/login?error=invalid');
     }
     

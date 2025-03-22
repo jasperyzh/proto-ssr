@@ -1,4 +1,4 @@
-import { createUser, findUserByEmail, createVerificationToken } from '../../lib/db';
+import { createUser, findUserByEmail, createVerificationToken } from '../../lib/supabaseDB';
 
 export async function POST({ request, redirect }) {
   // Parse form data
@@ -8,8 +8,12 @@ export async function POST({ request, redirect }) {
   const password = formData.get('password');
   
   // Simple validation
-  if (!name || !email || !password || password.length < 8) {
-    return redirect('/register?error=invalid_input');
+  if (!name || !email || !password) {
+    return redirect('/register?error=missing_fields');
+  }
+  
+  if (password.length < 8) {
+    return redirect('/register?error=password_too_short');
   }
   
   try {
@@ -27,16 +31,23 @@ export async function POST({ request, redirect }) {
     });
     
     // Generate verification token
-    const verificationToken = createVerificationToken(newUser.id);
+    const verificationToken = await createVerificationToken(newUser.id);
     
     // In a real app, we would send an email here
     // For development, we'll just log the verification link
-    console.log(`Verification link: http://localhost:4322/verify?token=${verificationToken}`);
+    console.log(`Verification link: ${import.meta.env.PUBLIC_SITE_URL || 'http://localhost:4321'}/verify?token=${verificationToken}`);
     
     // Redirect to success page
     return redirect('/register-success');
   } catch (error) {
     console.error('Registration error:', error);
-    return redirect('/register?error=server_error');
+    // Pass the specific error message in the URL
+    if (error.message.includes('Email address') && error.message.includes('invalid')) {
+      return redirect(`/register?error=invalid_email`);
+    } else if (error.message.includes('already registered')) {
+      return redirect('/register?error=exists');
+    } else {
+      return redirect(`/register?error=server_error&message=${encodeURIComponent(error.message)}`);
+    }
   }
 }

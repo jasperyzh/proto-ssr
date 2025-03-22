@@ -1,12 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Ticket from '../components/Ticket.astro';
-import { requireAuth } from '../lib/auth';
-import { getTicketsByUserId, venues, getEventTimes } from '../lib/db';
+import { requireAuth } from '../lib/supabaseAuth';
+import { getTicketsByUserId, venues, getEventTimes } from '../lib/supabaseDB';
 
 // Require authentication for this page
 const user = await requireAuth(Astro);
-const tickets = getTicketsByUserId(user.id);
+const tickets = await getTicketsByUserId(user.id);
 const venueOptions = venues;
 const eventTimes = getEventTimes();
 ---

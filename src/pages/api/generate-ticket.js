@@ -1,5 +1,6 @@
-import { requireAuth } from '../../lib/auth';
-import { createTicket, venues } from '../../lib/db';
+import { requireAuth } from '../../lib/supabaseAuth';
+import { createTicket, venues } from '../../lib/supabaseDB';
+import { generateQRCode } from '../../lib/qrcode';
 
 export async function POST({ request, redirect, cookies }) {
   try {
@@ -36,7 +37,7 @@ export async function POST({ request, redirect, cookies }) {
     });
     
     // Create ticket
-    const ticket = createTicket(user.id, {
+    const ticket = await createTicket(user.id, {
       venueName: venue.name,
       venueLocation: venue.location,
       date,

@@ -1,11 +1,11 @@
-import { getTicketById } from '../../../lib/db';
+import { getTicketById } from '../../../lib/supabaseDB';
 
 // This is a basic implementation since we don't have actual image generation capabilities
 // In a real project, you would use a library like @vercel/og to generate dynamic images
 
 export async function GET({ params, request }) {
   const { id } = params;
-  const ticket = getTicketById(id);
+  const ticket = await getTicketById(id);
   
   if (!ticket) {
     return new Response('Ticket not found', { status: 404 });

@@ -2,11 +2,11 @@
 import Layout from '../../layouts/Layout.astro';
 import Ticket from '../../components/Ticket.astro';
 import SocialShare from '../../components/SocialShare.jsx';
-import { getTicketById } from '../../lib/db';
+import { getTicketById } from '../../lib/supabaseDB';
 
 // Get ticket ID from URL params
 const { id } = Astro.params;
-const ticket = getTicketById(id);
+const ticket = await getTicketById(id);
 
 // If ticket doesn't exist, return 404
 if (!ticket) {
