@@ -35,6 +35,7 @@ const pageUrl = `https://${Astro.url.host}/ticket/${id}`;
       
       <div class="text-center">
         <SocialShare 
+          client:load
           url={pageUrl}
           title={pageTitle}
           description={pageDescription}
