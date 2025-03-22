@@ -1,0 +1,49 @@
+---
+import AuthLayout from '../layouts/AuthLayout.astro';
+import { getSessionFromCookie } from '../lib/auth';
+
+// Redirect if already logged in
+const sessionCookie = Astro.cookies.get('session')?.value;
+const session = sessionCookie ? await getSessionFromCookie(sessionCookie) : null;
+
+if (session?.user) {
+  return Astro.redirect('/dashboard');
+}
+
+// Check for error query param
+const error = Astro.url.searchParams.get('error');
+---
+
+<AuthLayout title="Register for an Account">
+  {error === 'exists' && (
+    <div class="alert alert-danger mb-4">
+      An account with this email already exists. Please login instead.
+    </div>
+  )}
+  
+  <form action="/api/register" method="post">
+    <div class="form-floating mb-3">
+      <input type="text" class="form-control" id="name" name="name" placeholder="Full Name" required>
+      <label for="name">Full Name</label>
+    </div>
+    
+    <div class="form-floating mb-3">
+      <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" required>
+      <label for="email">Email address</label>
+    </div>
+    
+    <div class="form-floating mb-3">
+      <input type="password" class="form-control" id="password" name="password" placeholder="Password" required minlength="8">
+      <label for="password">Password</label>
+      <div class="form-text">Password must be at least 8 characters long.</div>
+    </div>
+    
+    <div class="d-grid">
+      <button class="btn btn-primary btn-lg" type="submit">Register</button>
+    </div>
+    
+    <div class="text-center mt-4">
+      <p>Already have an account? <a href="/login">Login</a></p>
+    </div>
+  </form>
+</AuthLayout>

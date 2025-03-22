@@ -1,0 +1,69 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { venues } from '../lib/db';
+---
+
+<Layout title="Generate Your Event Ticket">
+  <section class="hero text-center py-5">
+    <h1 class="display-4 fw-bold">Welcome to Event Ticket Generator</h1>
+    <p class="lead col-md-10 col-lg-8 mx-auto mt-3">
+      Create and share your event tickets with friends and family. 
+      Register now to get started!
+    </p>
+    <div class="mt-4">
+      <a href="/register" class="btn btn-primary btn-lg me-2">Register Now</a>
+      <a href="/login" class="btn btn-outline-secondary btn-lg">Login</a>
+    </div>
+  </section>
+
+  <section class="venues mt-5">
+    <h2 class="text-center mb-4">Featured Venues</h2>
+    <div class="row">
+      {venues.map(venue => (
+        <div class="col-md-4 mb-4">
+          <div class="card h-100">
+            <img src={venue.image} class="card-img-top" alt={venue.name} />
+            <div class="card-body">
+              <h5 class="card-title">{venue.name}</h5>
+              <p class="card-text">{venue.location}</p>
+              <p class="text-muted">Capacity: {venue.capacity}</p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="features mt-5 bg-light p-5 rounded">
+    <h2 class="text-center mb-4">How It Works</h2>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="text-center">
+          <div class="mb-3">
+            <span class="badge bg-primary rounded-circle p-3">1</span>
+          </div>
+          <h3>Register</h3>
+          <p>Create an account with your email and password</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="text-center">
+          <div class="mb-3">
+            <span class="badge bg-primary rounded-circle p-3">2</span>
+          </div>
+          <h3>Generate Ticket</h3>
+          <p>Choose a venue and date to generate your unique ticket</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="text-center">
+          <div class="mb-3">
+            <span class="badge bg-primary rounded-circle p-3">3</span>
+          </div>
+          <h3>Share</h3>
+          <p>Share your attendance with friends on social media</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

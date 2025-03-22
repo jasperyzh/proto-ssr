@@ -1,0 +1,75 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Ticket from '../components/Ticket.astro';
+import { requireAuth } from '../lib/auth';
+import { getTicketsByUserId, venues, getEventTimes } from '../lib/db';
+
+// Require authentication for this page
+const user = await requireAuth(Astro);
+const tickets = getTicketsByUserId(user.id);
+const venueOptions = venues;
+const eventTimes = getEventTimes();
+---
+
+<Layout title="Your Dashboard">
+  <div class="row">
+    <div class="col-md-8">
+      <h1 class="mb-4">Your Dashboard</h1>
+      
+      {tickets.length === 0 ? (
+        <div class="alert alert-info">
+          <p class="mb-0">You don't have any tickets yet. Generate one now!</p>
+        </div>
+      ) : (
+        <div>
+          <h2 class="h4 mb-3">Your Tickets</h2>
+          {tickets.map(ticket => (
+            <Ticket ticket={ticket} />
+          ))}
+        </div>
+      )}
+    </div>
+    
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h2 class="h5 mb-0">Generate New Ticket</h2>
+        </div>
+        <div class="card-body">
+          <form action="/api/generate-ticket" method="post">
+            <div class="mb-3">
+              <label for="venueId" class="form-label">Select Venue</label>
+              <select class="form-select" id="venueId" name="venueId" required>
+                <option value="">Choose a venue...</option>
+                {venueOptions.map(venue => (
+                  <option value={venue.id}>{venue.name}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div class="mb-3">
+              <label for="eventDate" class="form-label">Select Date</label>
+              <select class="form-select" id="eventDate" name="eventDate" required>
+                <option value="">Choose a date...</option>
+                {eventTimes.map(time => (
+                  <option value={`${time.date}T${time.time}`}>
+                    {new Date(`${time.date}T${time.time}`).toLocaleDateString('en-US', {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary">Generate Ticket</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>

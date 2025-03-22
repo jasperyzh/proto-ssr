@@ -1,0 +1,56 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { validateVerificationToken, verifyUser } from '../lib/db';
+
+// Get token from query params
+const token = Astro.url.searchParams.get('token');
+let verified = false;
+let error = null;
+
+if (token) {
+  const userId = validateVerificationToken(token);
+  
+  if (userId) {
+    // Verify the user
+    await verifyUser(userId);
+    verified = true;
+  } else {
+    error = 'invalid_token';
+  }
+} else {
+  error = 'missing_token';
+}
+
+// Redirect after processing
+if (verified) {
+  return Astro.redirect('/login?verified=true');
+}
+---
+
+<Layout title="Verify Your Email">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body p-5 text-center">
+          <h1 class="card-title mb-4">Email Verification</h1>
+          
+          {error === 'invalid_token' && (
+            <div class="alert alert-danger">
+              <h3>Invalid or Expired Token</h3>
+              <p>This verification link is invalid or has expired.</p>
+              <a href="/login" class="btn btn-primary mt-3">Go to Login</a>
+            </div>
+          )}
+          
+          {error === 'missing_token' && (
+            <div class="alert alert-warning">
+              <h3>Missing Verification Token</h3>
+              <p>No verification token was provided.</p>
+              <a href="/login" class="btn btn-primary mt-3">Go to Login</a>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>

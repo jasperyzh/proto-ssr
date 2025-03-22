@@ -1,0 +1,45 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Ticket from '../../components/Ticket.astro';
+import SocialShare from '../../components/SocialShare.jsx';
+import { getTicketById } from '../../lib/db';
+
+// Get ticket ID from URL params
+const { id } = Astro.params;
+const ticket = getTicketById(id);
+
+// If ticket doesn't exist, return 404
+if (!ticket) {
+  return new Response('Ticket not found', { status: 404 });
+}
+
+// Prepare metadata for social sharing
+const pageTitle = `${ticket.username} is attending ${ticket.venueName}`;
+const pageDescription = `Join ${ticket.username} at ${ticket.venueName} on ${ticket.date} at ${ticket.time}`;
+const pageUrl = `https://${Astro.url.host}/ticket/${id}`;
+---
+
+<Layout 
+  title={pageTitle}
+  description={pageDescription}
+  ogImage={`https://${Astro.url.host}/api/og-image/${id}`}
+>
+  <div class="text-center mb-5">
+    <h1 class="display-5">{pageTitle}</h1>
+    <p class="lead">{pageDescription}</p>
+  </div>
+  
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <Ticket ticket={ticket} showLink={false} className="mb-5" />
+      
+      <div class="text-center">
+        <SocialShare 
+          url={pageUrl}
+          title={pageTitle}
+          description={pageDescription}
+        />
+      </div>
+    </div>
+  </div>
+</Layout>

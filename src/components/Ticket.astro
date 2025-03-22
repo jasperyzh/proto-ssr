@@ -1,0 +1,104 @@
+---
+import { generateQRCode } from '../lib/qrcode';
+
+interface Props {
+  ticket: {
+    id: string;
+    venueName: string;
+    venueLocation: string;
+    date: string;
+    time: string;
+    username: string;
+  };
+  showLink?: boolean;
+  className?: string;
+}
+
+const { ticket, showLink = true, className = '' } = Astro.props;
+const qrCodeData = await generateQRCode(`https://${Astro.url.host}/ticket/${ticket.id}`);
+---
+
+<div class={`ticket ${className}`}>
+  <div class="ticket-inner card">
+    <div class="card-header bg-primary text-white">
+      <h3 class="mb-0">Event Ticket</h3>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-8">
+          <h4 class="venue-name">{ticket.venueName}</h4>
+          <p class="venue-location text-muted">{ticket.venueLocation}</p>
+          
+          <div class="ticket-details mt-4">
+            <div class="row mb-2">
+              <div class="col-4 fw-bold">Date:</div>
+              <div class="col-8">{ticket.date}</div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-4 fw-bold">Time:</div>
+              <div class="col-8">{ticket.time}</div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-4 fw-bold">Attendee:</div>
+              <div class="col-8">{ticket.username}</div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-4 fw-bold">Ticket ID:</div>
+              <div class="col-8"><small class="text-muted">{ticket.id}</small></div>
+            </div>
+          </div>
+          
+          {showLink && (
+            <div class="mt-4">
+              <a href={`/ticket/${ticket.id}`} class="btn btn-primary">View Public Page</a>
+            </div>
+          )}
+        </div>
+        
+        <div class="col-md-4 text-center">
+          {qrCodeData && (
+            <div>
+              <img 
+                src={qrCodeData} 
+                alt={`QR Code for ticket ${ticket.id}`} 
+                class="img-fluid qr-code border mt-3"
+              />
+              <div class="small text-muted mt-2">Scan to verify</div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .ticket {
+    margin-bottom: 1.5rem;
+  }
+  
+  .ticket-inner {
+    border: 1px solid #ddd;
+    transition: all 0.3s ease;
+  }
+  
+  .ticket-inner:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+  }
+  
+  .venue-name {
+    margin-bottom: 0.25rem;
+  }
+  
+  .qr-code {
+    max-width: 150px;
+    max-height: 150px;
+  }
+  
+  @media (max-width: 767px) {
+    .qr-code {
+      margin-top: 1rem;
+    }
+  }
+</style>
