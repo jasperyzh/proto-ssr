@@ -68,6 +68,14 @@ export async function requireAuth(Astro) {
 
 // Helper function to sign out from Supabase
 export async function signOut() {
-  const { error } = await supabase.auth.signOut();
-  return !error;
+  try {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error('Supabase signOut error:', error);
+    }
+    return !error;
+  } catch (err) {
+    console.error('Failed to sign out from Supabase:', err);
+    return false;
+  }
 }
