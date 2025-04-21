@@ -1,5 +1,7 @@
 ### **Merged Key Points: Dynamic Ticket Generator with Astro SSR**
 
+sync success! hey now, careful!
+
 #### **Objective**:
 Create a web application that allows users to:
 1. **Register and log in** (with mock email verification).
